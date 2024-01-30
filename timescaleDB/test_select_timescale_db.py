@@ -25,7 +25,7 @@ def get_total_records(conn_pool):
     cur.execute("SELECT COUNT(*) FROM items")
     total_records = cur.fetchone()[0]
     conn.close()  # Закройте соединение после использования, а не весь пул соединений
-    return total_records
+    return total_records    
 
 def plot_read_unique_id_test(times):
     plt.plot(range(len(times)), times, marker='o', linestyle='-', color='b')
