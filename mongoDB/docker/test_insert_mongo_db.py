@@ -30,13 +30,13 @@ def write_speed_test(insert_iters, insert_size_batch, db):
     return times
 
 # Функция для отображения графика скорости теста
-def plot_speed_test(times, test_type):
+def plot_speed_test(times, title: str):
     plt.plot(range(len(times)), times)
-    plt.xlabel("Iteration")
+    plt.xlabel("Iteration в масштабе 1 к 10")
     plt.ylabel("Time (seconds)")
-    plt.title(f"{test_type} Speed Test for MongoDB")
+    plt.title(title)
     plt.grid(True)
-    plt.show()
+    plt.savefig(f"results/{title}.png")  # Сохранить график в файл
 
 # Основная функция для проведения теста
 def main():
