@@ -39,7 +39,7 @@
 >
 
 <details>
-  <summary>Результаты тестов:</summary>
+  <summary style="font-weight: bold;">Результаты тестов:</summary>
   <ul>
     <li>
       <details>
