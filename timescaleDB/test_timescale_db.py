@@ -49,9 +49,8 @@ def read_unique_id_test(amount_of_requests, conn_pool):
         #cur.execute("SELECT * FROM items WHERE item_id = %s ORDER BY date_added ASC", (unique_id,))
         rows = cur.fetchall()
         end_time = time.time()
-        if i % 10 == 0:
-            times.append(end_time - start_time)
-            print(f"insert: {i}/{amount_of_requests} -- {end_time - start_time}")
+        times.append(end_time - start_time)
+        print(f"insert: {i}/{amount_of_requests} -- {end_time - start_time}")
     cur.close()
     conn_pool.putconn(conn)
     return times
@@ -85,45 +84,43 @@ def write_speed_test(config, iteration_amount, conn_pool):
             print(f"insert: {i}/{iteration_amount} -- {end_time - start_time}")
     return times
 
-def save_plot_test_result_insert(times, title, config, iteration_amount):
+def save_plot_test_result_insert(times, conn_pool):
     plt.clf()
     plt.figure(figsize=(15, 7))
     plt.plot(range(len(times)), times, marker='o', linestyle='-', color='b')
     plt.xlabel("rows_amount = iter * 50k rows")
     plt.ylabel("Time (seconds)")
-    plt.title(title)
+    total_records = get_total_records(conn_pool)
+    plt.title(f"avg time in seconds for adding 50k rows, max table size at the end is {int(total_records / 1000000)}kk rows")
     plt.grid(True)
-    plt.savefig(f"results/time_to_insert_at_size_{int(iteration_amount * config['rows_to_insert_at_a_time'])}.png")  # Сохранить график в файл
+    plt.savefig(f"timescaleDB/results/time_to_insert_at_size_{int(total_records / 1000000)}kk_rows.png")  # Сохранить график в файл
 
-def save_plot_test_result_select(times, title, config, iteration_amount):
+def save_plot_test_result_select(times, conn_pool):
     plt.clf()
     plt.figure(figsize=(15, 7))
     plt.plot(range(len(times)), times, marker='o', linestyle='-', color='b')
     plt.xlabel("Iterations")
     plt.ylabel("Time (seconds)")
-    plt.title(title)
+    total_records = get_total_records(conn_pool)
+    plt.title(f"avg time in seconds to get data for unique item_id ~(table_size / 100k), table size was {int(total_records / 1000000)}kk rows")
     plt.grid(True)
-    plt.savefig(f"results/time_to_select_data_for_unique_id_table_size_was_{int(iteration_amount * config['rows_to_insert_at_a_time'])}.png")  # Сохранить график в файл
+    plt.savefig(f"timescaleDB/results/time_to_select_data_for_unique_id_table_size_was_{int(total_records / 1000000)}kk_rows.png")  # Сохранить график в файл
 
 
 def run_test_scenario(conn_pool):
     config = {
             "rows_to_insert_at_a_time": 50000,
             "unique_amount": 100000,
-            "iterations_at_each_stage": [200,],  # 50000 * 100 + 50000 * 1000
-            "iterations_to_get_mean_time_of_select": 400 
+            "iterations_at_each_stage": [100, 4000],  # 50000 * 100 + 50000 * 1000
+            "iterations_to_get_mean_time_of_select": 40
         }
     
     for iteration_amount in config["iterations_at_each_stage"]:
         times = write_speed_test(config, iteration_amount, conn_pool)
-        save_plot_test_result_insert(times, f"avg time in seconds for adding 50k rows, max table size at the end is "
-                                     f"{iteration_amount * config['rows_to_insert_at_a_time']}",
-                                     config, iteration_amount)
+        save_plot_test_result_insert(times, conn_pool)
         
         times = read_unique_id_test(config["iterations_to_get_mean_time_of_select"], conn_pool)
-        save_plot_test_result_select(times, f"avg time in seconds to get data for unique item_id ~(table_size / 100k), "
-                                     f"table size was {iteration_amount * config['rows_to_insert_at_a_time']}",
-                                     config, iteration_amount)
+        save_plot_test_result_select(times, conn_pool)
 # Основная функция для проведения теста
 def main():
     conn_pool = connect_timescaledb()
@@ -131,7 +128,7 @@ def main():
     #clear_table(conn_pool)
 
     total_records = get_total_records(conn_pool)
-    print(f"Total records in the table: {total_records}")
+    print(f"Total records in the table: {int(total_records / 1000000)}kk")
 
     run_test_scenario(conn_pool)
 

@@ -8,5 +8,7 @@ CREATE TABLE IF NOT EXISTS items (
     date_added TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
--- TODO реализовать hypertable SELECT create_hypertable('transactions', by_range('time')); 
+SELECT create_hypertable('items', 'date_added');
+
+
 -- docs: https://docs.timescale.com/tutorials/latest/blockchain-query/blockchain-dataset/
