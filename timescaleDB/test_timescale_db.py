@@ -111,8 +111,8 @@ def run_test_scenario(conn_pool):
     config = {
             "rows_to_insert_at_a_time": 50000,
             "unique_amount": 100000,
-            "iterations_at_each_stage": [100, 4000],  # 50000 * 100 + 50000 * 1000
-            "iterations_to_get_mean_time_of_select": 40
+            "iterations_at_each_stage": [100, 900, 4000],  # 50000 * 100 + 50000 * 1000
+            "iterations_to_get_mean_time_of_select": 30
         }
     
     for iteration_amount in config["iterations_at_each_stage"]:

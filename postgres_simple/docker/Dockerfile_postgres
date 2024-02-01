@@ -1,0 +1,9 @@
+# Базовый образ
+FROM postgres:12
+
+# Копирование исходных файлов (для инициализации таблицы)
+COPY init.sql /docker-entrypoint-initdb.d/
+
+# создание образа и контейнера:
+#  docker build -t postgres -f Dockerfile_postgres .
+#  docker run --name postgres-container -d -p 5432:5432 -e POSTGRES_PASSWORD=postgres postgres
