@@ -67,7 +67,7 @@ def read_unique_id_test(amount_of_requests, conn_pool):
 
         end_time = time.time()
         times.append(end_time - start_time)
-        print(f"insert: {i}/{amount_of_requests} -- {end_time - start_time}")
+        print(f"insert: {i}/{amount_of_requests} -- {end_time - start_time}, len {len(all_results)}")
 
     return times
 
@@ -138,13 +138,13 @@ def run_test_scenario(conn_pool):
     config = {
             "rows_to_insert_at_a_time": 50000,
             "unique_amount": 100000,
-            "iterations_at_each_stage": [100, 900, 4000],  # 50000 * 100 + 50000 * 1000
-            "iterations_to_get_mean_time_of_select": 30
+            "iterations_at_each_stage": [5000],  # 50000 * 100 + 50000 * 1000
+            "iterations_to_get_mean_time_of_select": 100
         }
     
     for iteration_amount in config["iterations_at_each_stage"]:
-        times = write_speed_test(config, iteration_amount, conn_pool)
-        save_plot_test_result_insert(times, conn_pool)
+        # times = write_speed_test(config, iteration_amount, conn_pool)
+        # save_plot_test_result_insert(times, conn_pool)
         
         times = read_unique_id_test(config["iterations_to_get_mean_time_of_select"], conn_pool)
         save_plot_test_result_select(times, conn_pool)
@@ -153,7 +153,7 @@ def run_test_scenario(conn_pool):
 def main():
     conn_pool = connect_timescaledb()
 
-    #clear_tables(conn_pool)
+    # clear_tables(conn_pool)
 
     total_records = get_total_records(conn_pool)
     print(f"Total records in the table: {total_records}")
