@@ -120,7 +120,7 @@ def save_plot_test_result_insert(times, conn_pool):
     total_records = get_total_records(conn_pool)
     plt.title(f"avg time in seconds for adding 50k rows, max table size at the end is {int(total_records / 1000000)}kk rows")
     plt.grid(True)
-    plt.savefig(f"postgresDB_partitioning/results/time_to_insert_at_size_{int(total_records / 1000000)}kk_rows.png")  # Сохранить график в файл
+    plt.savefig(f"postgresDB_partitioning/results_latest_postgres/time_to_insert_at_size_{int(total_records / 1000000)}kk_rows.png")  # Сохранить график в файл
 
 def save_plot_test_result_select(times, conn_pool):
     plt.clf()
@@ -131,20 +131,20 @@ def save_plot_test_result_select(times, conn_pool):
     total_records = get_total_records(conn_pool)
     plt.title(f"avg time in seconds to get data for unique item_id ~(table_size / 100k), table size was {int(total_records / 1000000)}kk rows")
     plt.grid(True)
-    plt.savefig(f"postgresDB_partitioning/results/time_to_select_data_for_unique_id_table_size_was_{int(total_records / 1000000)}kk_rows.png")  # Сохранить график в файл
+    plt.savefig(f"postgresDB_partitioning/results_latest_postgres/time_to_select_data_for_unique_id_table_size_was_{int(total_records / 1000000)}kk_rows.png")  # Сохранить график в файл
 
 
 def run_test_scenario(conn_pool):
     config = {
             "rows_to_insert_at_a_time": 50000,
             "unique_amount": 100000,
-            "iterations_at_each_stage": [5000],  # 50000 * 100 + 50000 * 1000
-            "iterations_to_get_mean_time_of_select": 100
+            "iterations_at_each_stage": [100, 900, 4000, 5000],  # 50000 * 100 + 50000 * 1000
+            "iterations_to_get_mean_time_of_select": 50
         }
     
     for iteration_amount in config["iterations_at_each_stage"]:
-        # times = write_speed_test(config, iteration_amount, conn_pool)
-        # save_plot_test_result_insert(times, conn_pool)
+        times = write_speed_test(config, iteration_amount, conn_pool)
+        save_plot_test_result_insert(times, conn_pool)
         
         times = read_unique_id_test(config["iterations_to_get_mean_time_of_select"], conn_pool)
         save_plot_test_result_select(times, conn_pool)

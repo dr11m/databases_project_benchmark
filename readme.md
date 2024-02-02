@@ -39,39 +39,49 @@
 >
 
 <details>
-  <summary style="font-weight: bold;">Результаты тестов:</summary>
-    <ul>
+  <summary style="font-weight: bold;">Результаты тестов (от лучшего к худшему):</summary>
+  <ul>
     <li>
       <details>
-        <summary>Результат для timescaleDB:</summary>
-        $TODO реализовать hypertable SELECT create_hypertable('transactions', by_range('time')); (docs: https://docs.timescale.com/tutorials/latest/blockchain-query/blockchain-dataset/)
+        <summary>latest postgres:16.1 (версия не сильно повлияла на эффективность, минимальное ускорение):</summary>
+        1) среднее время записи 50к строк при размере таблиц в 500кк записей (равномерно в 4 таблицах)
+        <img src="postgresDB_partitioning\results_latest_postgres\time_to_insert_at_size_500kk_rows.png">
+        2) скорость чтения в зависимости от размера (от 5кк до 500кк), для получения информации для одного item_id делается 4 параллельных запроса в 4 таблицы
+        <p> </p>
+        <ul>5кк строк</ul>
+        <img
+        src="postgresDB_partitioning\results_latest_postgres\time_to_select_data_for_unique_id_table_size_was_5kk_rows.png">
+        <ul>50кк строк</ul>
+        <img
+        src="postgresDB_partitioning\results_latest_postgres\time_to_select_data_for_unique_id_table_size_was_50kk_rows.png">
+        <ul>250кк строк</ul>
+        <img
+        src="postgresDB_partitioning\results_latest_postgres\time_to_select_data_for_unique_id_table_size_was_250kk_rows.png">
+        <ul>500кк строк</ul>
+        <img
+        src="postgresDB_partitioning\results_latest_postgres\time_to_select_data_for_unique_id_table_size_was_500kk_rows.png">
       </details>
     </li>
   </ul>
   <ul>
     <li>
       <details>
-        <summary>Результат для postgres (одна таблица):</summary>
-        1) скорость вставки в зависимости от размера таблицы (минимальный размер - 2.5кк, максимальный - 250кк)
-        <p> </p>
-        <ul>2.5кк строк</ul>
-        <img src="timescaleDB\results\time_to_insert_at_size_3kk.png" alt="описание_изображения">
-        <ul>125кк строк</ul>
-        <img src="timescaleDB\results\time_to_insert_at_size_125kk.png" alt="описание_изображения">
-        - минимальные выбросы, среднее время по-прежнему ~0.2 секунды
-        <ul>250кк строк</ul>
-        <img src="timescaleDB\results\time_to_insert_at_size_250kk.png" alt="описание_изображения">
+        <summary>Результат для postgres (одна таблица, указан index для item_id):</summary>
+        1) скорость вставки в зависимости от размера таблицы (минимальный размер - 2.5кк, максимальный - 450кк)
+        <ul>450кк строк</ul>
+        <img src="postgres_simple\results_postgres_with_index_on_item_id\time_to_insert_at_size_450kk_rows.png">
         >> По итогу скорость добавления практически никак не менялась от 2кк до 500кк строк.
         <p> </p>
-        1) скорсть получения всех строк по уникальному item_id в зависимости от размера таблицы (минимальный размер - 2.5кк, максимальный - 250кк). Уникальных item_id 100к, на каждый при максимальной загруженности приходится ~5к строк.
-        <p></p>
-        <ul>2.5кк строк</ul>
-        <img src="timescaleDB\results\time_to_select_data_for_unique_id_table_size_was_3kk.png" alt="описание_изображения">
-        <ul>125кк строк</ul>
-        <img src="timescaleDB\results\time_to_select_data_for_unique_id_table_size_was_125kk.png" alt="описание_изображения">
+        2) скорсть получения всех строк по уникальному item_id в зависимости от размера таблицы (минимальный размер - 5кк, максимальный - 450кк). Уникальных item_id 100к, на каждый при максимальной загруженности приходится ~5к строк.
+        <ul>5кк строк</ul>
+        <img src="postgres_simple\results_postgres_with_index_on_item_id\time_to_select_data_for_unique_id_table_size_was_5kk_rows.png">
+        <ul>50кк строк</ul>
+        <img src="postgres_simple\results_postgres_with_index_on_item_id\time_to_select_data_for_unique_id_table_size_was_50kk_rows.png">
         <ul>250кк строк</ul>
-        <img src="timescaleDB\results\time_to_select_data_for_unique_id_table_size_was_250kk.png" alt="описание_изображения">
-        >> Тут уже четко видна зависимость количества строк в таблице и среднего времени для ответа на запрос (от 0.002сек. при 2.5кк строк до 1.2сек. при 500кк строк)
+        <img src="postgres_simple\results_postgres_with_index_on_item_id\time_to_select_data_for_unique_id_table_size_was_250kk_rows.png">
+        <ul>450кк строк</ul>
+        <img src="postgres_simple\results_postgres_with_index_on_item_id\time_to_select_data_for_unique_id_table_size_was_450kk_rows.png">
+        >> Тут уже четко видна зависимость количества строк в таблице и среднего времени для ответа на запрос (от 0.002сек. при 2.5кк строк до 1.2сек. при 450кк строк)
       </details>
     </li>
   </ul>
@@ -79,23 +89,16 @@
     <li>
       <details>
         <summary>Результат для mongoDB:</summary>
-        1) Средняя скорость для добавления 50к строк была примерно 0.3 секунды и не менялась от 3кк строк до 500кк строк (примерно схожие результаты у timescaleDB)
+        1) Средняя скорость для добавления 50к строк была примерно 0.3 секунды и не менялась от 3кк строк до 500кк строк (примерно схожие результаты у postgres)
         <p></p>
         2) Средняя скорость получения всех строк по уникальному item_id в зависимости от размера таблицы составила примерно 20 секунд и увеличивалась по мере роста числа записей в БД (минимальный размер - 2.5кк, максимальный - 500кк).
         <p></p>
-        P.S. Именно поэтому я и не стал запариваться с картинками и описанием, так как результат для чтения слишком плачевный (в 10 раз медленнее чем timescaleDB)
-      </details>
-    </li>
-  </ul>
-    <ul>
-    <li>
-      <details>
-        <summary>Результат для postgres_partitioning:</summary>
-        #TODO описать результат (хуже обычного)
+        P.S. Именно поэтому я и не стал запариваться с картинками и описанием, так как результат для чтения слишком плачевный (в 10 раз медленнее чем у postgres), хуже работал только postgres без явной индексации по item_id
       </details>
     </li>
   </ul>
 </details>
 
 
-#TODO разделить timescaledb на 4 таблицы и добавлять последовательно в каждую, на записи параллельно отправлять запрос в 4 таблицы
+ ## Вывод:
+ > Самым эффективным способом для чтения оказалось разделение данных на равные по рзмеру таблицы, разделение на 4 таблицы сократило время на получение всей информации для одного item_id в 2 раза (с 1.2 при одной таблице, до 0.55 при 4 таблицах).

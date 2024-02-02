@@ -9,5 +9,5 @@ COPY init.sql /docker-entrypoint-initdb.d/
 
 
 # создание образа и контейнера:
-#  docker build -t timescaledb .
-#  docker run --name timescaledb_container_partitioning -d -p 5432:5432 -e POSTGRES_PASSWORD=postgres timescaledb
+#  docker build -t timescaledb -f Dockerfile_timescale .
+#  docker run --name timescaledb-container -d -p 5432:5432 -e POSTGRES_PASSWORD=postgres timescaledb
