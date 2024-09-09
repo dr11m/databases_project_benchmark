@@ -150,7 +150,7 @@ def plot_insert_and_select_times(all_select_times):
         os.makedirs('results')
     
     # Save the plot as a PNG file
-    plt.savefig('results/select_performance_plot.png')
+    plt.savefig(f'results/select_performance_plot_for_{config["unique_items"]}_unique_rows.png')
     logger.info("Performance plot saved as 'results/performance_plot.png'")
     
     plt.show()
