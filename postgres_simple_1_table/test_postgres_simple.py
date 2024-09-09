@@ -12,8 +12,8 @@ from loguru import logger
 table_name = "items_test"
 
 config = {
-    "unique_items": 17000,
-    "list_lengths": [500, 2500, 5000, 10000],  # Длины списков для каждого этапа
+    "unique_items": 30000,
+    "list_lengths": [500, 5000, 10000, 25000],  # Длины списков для каждого этапа
     "iterations_to_get_mean_time_of_select": 10  # Число итераций для измерения времени SELECT
 }
 
@@ -150,7 +150,7 @@ def plot_insert_and_select_times(all_select_times):
         os.makedirs('results')
     
     # Save the plot as a PNG file
-    plt.savefig(f'results/select_performance_plot_for_{config["unique_items"]}_unique_rows.png')
+    plt.savefig(f'results/select_performance_plot_for_{config["unique_items"]}k_unique_rows.png')
     logger.info("Performance plot saved as 'results/performance_plot.png'")
     
     plt.show()
