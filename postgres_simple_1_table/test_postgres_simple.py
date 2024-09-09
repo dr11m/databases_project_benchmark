@@ -12,7 +12,7 @@ from loguru import logger
 table_name = "items_test"
 
 config = {
-    "unique_items": 30000,
+    "unique_items": 50000,
     "list_lengths": [500, 5000, 10000, 25000],  # Длины списков для каждого этапа
     "iterations_to_get_mean_time_of_select": 10  # Число итераций для измерения времени SELECT
 }
