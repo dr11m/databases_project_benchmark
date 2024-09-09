@@ -1,1 +1,0 @@
-timescaleDB с hypertable
